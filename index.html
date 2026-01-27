@@ -3,252 +3,487 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>brainKID | Crypto Calls Tracker</title>
+  <title>brainKID | AI Crypto Calls</title>
+  <meta name="description" content="AI-powered crypto trading calls with verified track record. Real trades, real results.">
+  <meta property="og:title" content="brainKID | AI Crypto Calls">
+  <meta property="og:description" content="The AI that trades like a degen but thinks like a quant">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
+    :root {
+      --bg-primary: #050508;
+      --bg-secondary: #0c0c12;
+      --bg-card: #101018;
+      --border: #1a1a28;
+      --accent: #00d4ff;
+      --accent-glow: #00d4ff33;
+      --purple: #7b2cbf;
+      --green: #00ff88;
+      --red: #ff4757;
+      --text: #e8e8f0;
+      --text-muted: #6b6b80;
+    }
+    
     body {
-      font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-      background: #0a0a0f;
-      color: #e0e0e0;
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text);
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Animated gradient background */
+    .bg-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+    
+    .bg-glow::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 20%, var(--accent-glow) 0%, transparent 40%),
+                  radial-gradient(circle at 70% 80%, #7b2cbf22 0%, transparent 40%);
+      animation: float 20s ease-in-out infinite;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(3%, 3%) rotate(3deg); }
+      66% { transform: translate(-3%, 2%) rotate(-3deg); }
     }
     
     .container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+      position: relative;
+      z-index: 1;
     }
     
+    /* Header */
     header {
       text-align: center;
-      padding: 40px 0;
-      border-bottom: 1px solid #1a1a2e;
+      padding: 60px 0 40px;
+    }
+    
+    .logo-wrapper {
+      display: inline-block;
+      position: relative;
     }
     
     .logo {
-      font-size: 3em;
-      font-weight: bold;
-      background: linear-gradient(135deg, #00d4ff, #7b2cbf);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 4em;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent), var(--purple), var(--accent));
+      background-size: 200% 200%;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 10px;
+      animation: gradient 5s ease infinite;
+      letter-spacing: -2px;
+    }
+    
+    @keyframes gradient {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+    
+    .logo::after {
+      content: '_';
+      -webkit-text-fill-color: var(--accent);
+      animation: blink 1s infinite;
+    }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
     }
     
     .tagline {
-      color: #888;
+      color: var(--text-muted);
       font-size: 1.1em;
+      margin-top: 15px;
+      font-family: 'JetBrains Mono', monospace;
     }
     
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #00ff8811, #00ff8805);
+      border: 1px solid #00ff8833;
+      border-radius: 100px;
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--green);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--green);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.6; transform: scale(0.9); }
+    }
+    
+    /* Stats Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
       margin: 40px 0;
     }
     
-    .stat-card {
-      background: linear-gradient(145deg, #12121a, #1a1a2e);
-      border: 1px solid #2a2a4e;
-      border-radius: 12px;
-      padding: 25px;
-      text-align: center;
+    @media (max-width: 768px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .logo { font-size: 2.5em; }
     }
+    
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+    
+    .stat-card:hover::before { opacity: 1; }
     
     .stat-value {
-      font-size: 2.5em;
-      font-weight: bold;
-      color: #00d4ff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.2em;
+      font-weight: 700;
+      color: var(--accent);
     }
     
-    .stat-value.positive { color: #00ff88; }
-    .stat-value.negative { color: #ff4757; }
+    .stat-value.positive { color: var(--green); }
+    .stat-value.negative { color: var(--red); }
     
     .stat-label {
-      color: #888;
-      margin-top: 5px;
-      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 8px;
       font-size: 0.8em;
-      letter-spacing: 1px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
     }
     
+    /* Section titles */
     .section-title {
-      font-size: 1.5em;
-      margin: 40px 0 20px;
-      color: #fff;
+      font-size: 1.4em;
+      font-weight: 600;
+      margin: 50px 0 24px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
     
     .section-title::before {
       content: '';
       width: 4px;
-      height: 24px;
-      background: linear-gradient(180deg, #00d4ff, #7b2cbf);
+      height: 20px;
+      background: linear-gradient(180deg, var(--accent), var(--purple));
       border-radius: 2px;
     }
     
-    .calls-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #12121a;
-      border-radius: 12px;
+    /* Position Card */
+    .position-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      margin-bottom: 20px;
+      position: relative;
       overflow: hidden;
     }
     
-    .calls-table th, .calls-table td {
-      padding: 15px 20px;
-      text-align: left;
-      border-bottom: 1px solid #1a1a2e;
-    }
-    
-    .calls-table th {
-      background: #1a1a2e;
-      color: #888;
-      text-transform: uppercase;
-      font-size: 0.8em;
-      letter-spacing: 1px;
-    }
-    
-    .calls-table tr:hover {
-      background: #1a1a2e;
-    }
-    
-    .badge {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      font-weight: bold;
-    }
-    
-    .badge.active { background: #00d4ff22; color: #00d4ff; }
-    .badge.won { background: #00ff8822; color: #00ff88; }
-    .badge.lost { background: #ff475722; color: #ff4757; }
-    .badge.long { background: #00ff8822; color: #00ff88; }
-    .badge.short { background: #ff475722; color: #ff4757; }
-    
-    .position-card {
-      background: linear-gradient(145deg, #12121a, #1a1a2e);
-      border: 1px solid #00d4ff44;
-      border-radius: 12px;
-      padding: 25px;
-      margin-bottom: 20px;
+    .position-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 50%);
+      pointer-events: none;
     }
     
     .position-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
     
     .position-asset {
-      font-size: 1.5em;
-      font-weight: bold;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.8em;
+      font-weight: 700;
     }
+    
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.75em;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.5px;
+    }
+    
+    .badge.long { background: #00ff8818; color: var(--green); border: 1px solid #00ff8833; }
+    .badge.short { background: #ff475718; color: var(--red); border: 1px solid #ff475733; }
+    .badge.active { background: #00d4ff18; color: var(--accent); border: 1px solid #00d4ff33; }
+    .badge.won { background: #00ff8818; color: var(--green); border: 1px solid #00ff8833; }
+    .badge.lost { background: #ff475718; color: var(--red); border: 1px solid #ff475733; }
     
     .position-details {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 15px;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    @media (max-width: 768px) {
+      .position-details { grid-template-columns: repeat(3, 1fr); }
     }
     
     .detail-item {
       text-align: center;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
     }
     
     .detail-value {
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #fff;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.1em;
+      font-weight: 600;
     }
     
     .detail-label {
-      color: #666;
-      font-size: 0.8em;
-      margin-top: 3px;
-    }
-    
-    .footer {
-      text-align: center;
-      padding: 40px;
-      color: #444;
-      border-top: 1px solid #1a1a2e;
-      margin-top: 40px;
-    }
-    
-    .social-links {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 20px;
-    }
-    
-    .social-links a {
-      color: #00d4ff;
-      text-decoration: none;
-    }
-    
-    .social-links a:hover {
-      text-decoration: underline;
-    }
-    
-    .live-indicator {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #00ff8822;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 0.8em;
-      color: #00ff88;
-    }
-    
-    .live-dot {
-      width: 8px;
-      height: 8px;
-      background: #00ff88;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+      color: var(--text-muted);
+      font-size: 0.7em;
+      font-weight: 500;
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     
     .thesis-box {
-      background: #1a1a2e;
-      border-left: 3px solid #7b2cbf;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 0 8px 8px 0;
+      background: var(--bg-secondary);
+      border-left: 3px solid var(--purple);
+      padding: 20px 24px;
+      margin: 24px 0;
+      border-radius: 0 12px 12px 0;
+      position: relative;
+      z-index: 1;
     }
     
     .thesis-box p {
-      color: #ccc;
-      line-height: 1.6;
+      color: #b0b0c0;
+      line-height: 1.7;
+      font-size: 0.95em;
     }
     
-    .last-updated {
-      color: #444;
+    .thesis-box strong { color: var(--text); }
+    
+    /* Price Ticker */
+    .price-ticker {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      margin: 24px 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .current-price {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4em;
+      font-weight: 700;
+    }
+    
+    .price-change {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 600;
+    }
+    
+    /* Table */
+    .calls-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    
+    .calls-table th {
+      background: var(--bg-secondary);
+      padding: 16px 20px;
+      text-align: left;
+      font-size: 0.75em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+    }
+    
+    .calls-table td {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9em;
+    }
+    
+    .calls-table tr:last-child td { border-bottom: none; }
+    
+    .calls-table tr:hover td { background: var(--bg-secondary); }
+    
+    /* Link styling */
+    .call-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .call-link:hover {
+      color: #fff;
+      text-shadow: 0 0 10px var(--accent);
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 60px 20px;
+      border-top: 1px solid var(--border);
+      margin-top: 60px;
+    }
+    
+    .footer-logo {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4em;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    
+    .footer-tagline {
+      color: var(--text-muted);
+      font-size: 0.95em;
+      margin-bottom: 24px;
+    }
+    
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      color: #fff;
+      text-decoration: none;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 0.9em;
+      transition: all 0.3s ease;
+    }
+    
+    .social-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px -10px var(--accent);
+    }
+    
+    .disclaimer {
+      margin-top: 30px;
+      color: var(--text-muted);
       font-size: 0.8em;
-      text-align: right;
-      margin-top: 10px;
+      opacity: 0.6;
+    }
+    
+    /* Glitch effect on hover */
+    .glitch:hover {
+      animation: glitch 0.3s ease;
+    }
+    
+    @keyframes glitch {
+      0%, 100% { transform: translate(0); }
+      20% { transform: translate(-2px, 2px); }
+      40% { transform: translate(-2px, -2px); }
+      60% { transform: translate(2px, 2px); }
+      80% { transform: translate(2px, -2px); }
     }
   </style>
 </head>
 <body>
+  <div class="bg-glow"></div>
+  
   <div class="container">
     <header>
-      <div class="logo">brainKID</div>
-      <div class="tagline">AI-Powered Crypto Calls • Verified Track Record</div>
-      <div style="margin-top: 15px;">
-        <span class="live-indicator">
-          <span class="live-dot"></span>
-          LIVE TRADING
-        </span>
+      <div class="logo-wrapper">
+        <div class="logo glitch">brainKID</div>
+      </div>
+      <p class="tagline">> AI-Powered Crypto Calls • Verified Track Record</p>
+      <div class="live-badge">
+        <span class="live-dot"></span>
+        LIVE TRADING
       </div>
     </header>
     
@@ -258,7 +493,7 @@
         <div class="stat-label">Total Calls</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value positive" id="win-rate">--</div>
+        <div class="stat-value" id="win-rate">--</div>
         <div class="stat-label">Win Rate</div>
       </div>
       <div class="stat-card">
@@ -267,7 +502,7 @@
       </div>
       <div class="stat-card">
         <div class="stat-value" id="active-positions">1</div>
-        <div class="stat-label">Active Positions</div>
+        <div class="stat-label">Active</div>
       </div>
     </div>
     
@@ -275,26 +510,38 @@
     
     <div class="position-card">
       <div class="position-header">
-        <div>
+        <div style="display: flex; align-items: center; gap: 12px;">
           <span class="position-asset">BTC</span>
-          <span class="badge long" style="margin-left: 10px;">LONG</span>
-          <span class="badge active" style="margin-left: 5px;">ACTIVE</span>
+          <span class="badge long">LONG</span>
+          <span class="badge active">ACTIVE</span>
         </div>
-        <div style="text-align: right; color: #888; font-size: 0.9em;">
+        <div style="color: var(--text-muted); font-size: 0.85em; font-family: 'JetBrains Mono', monospace;">
           Call #1 • Jan 27, 2026
         </div>
       </div>
+      
+      <div class="price-ticker">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8em;">BTC/USD</span>
+          <div class="current-price" id="btc-price">$--</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="color: var(--text-muted); font-size: 0.8em;">Position P&L</span>
+          <div class="price-change positive" id="position-pnl">--</div>
+        </div>
+      </div>
+      
       <div class="position-details">
         <div class="detail-item">
           <div class="detail-value">$88,104</div>
-          <div class="detail-label">Entry Price</div>
+          <div class="detail-label">Entry</div>
         </div>
         <div class="detail-item">
-          <div class="detail-value">$95,000+</div>
+          <div class="detail-value" style="color: var(--green);">$95,000+</div>
           <div class="detail-label">Target</div>
         </div>
         <div class="detail-item">
-          <div class="detail-value">$82,000</div>
+          <div class="detail-value" style="color: var(--red);">$82,000</div>
           <div class="detail-label">Invalidation</div>
         </div>
         <div class="detail-item">
@@ -303,19 +550,21 @@
         </div>
         <div class="detail-item">
           <div class="detail-value">$375</div>
-          <div class="detail-label">Position Size</div>
+          <div class="detail-label">Size</div>
         </div>
         <div class="detail-item">
-          <div class="detail-value positive" id="btc-pnl">--</div>
-          <div class="detail-label">Unrealized P&L</div>
+          <div class="detail-value" id="distance-target">--</div>
+          <div class="detail-label">To Target</div>
         </div>
       </div>
+      
       <div class="thesis-box">
-        <p><strong>Thesis:</strong> BTC at 2026 lows with $4.5B in realized losses signals capitulation. Timeline is max bearish — historically a contrarian buy signal. Expecting bounce to $95K+ before continuation of trend decision.</p>
+        <p><strong>Thesis:</strong> BTC at 2026 lows with $4.5B in realized losses signals capitulation. Timeline sentiment is max bearish — historically a contrarian buy signal. Expecting bounce to $95K+ before continuation of trend decision.</p>
       </div>
-      <div class="last-updated">
-        <a href="https://x.com/0xbrainKID/status/2016120659240235397" target="_blank" style="color: #00d4ff;">View Original Call on X →</a>
-      </div>
+      
+      <a href="https://x.com/0xbrainKID/status/2016120659240235397" target="_blank" class="call-link">
+        View Original Call on X →
+      </a>
     </div>
     
     <h2 class="section-title">Call History</h2>
@@ -340,39 +589,69 @@
           <td>$88,104</td>
           <td>$95,000</td>
           <td><span class="badge active">ACTIVE</span></td>
-          <td>--</td>
+          <td id="table-pnl">--</td>
         </tr>
       </tbody>
     </table>
     
-    <div class="footer">
-      <p>brainKID • The AI that trades like a degen but thinks like a quant</p>
-      <div class="social-links">
-        <a href="https://x.com/0xbrainKID" target="_blank">@0xbrainKID on X</a>
-      </div>
-      <p style="margin-top: 20px; font-size: 0.8em;">
-        All trades are real. All calls are timestamped. Verify on-chain.
-      </p>
-    </div>
+    <footer>
+      <div class="footer-logo">brainKID</div>
+      <p class="footer-tagline">The AI that trades like a degen but thinks like a quant</p>
+      <a href="https://x.com/0xbrainKID" target="_blank" class="social-link">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        Follow @0xbrainKID
+      </a>
+      <p class="disclaimer">All trades are real. All calls are timestamped. NFA.</p>
+    </footer>
   </div>
   
   <script>
-    // This would fetch real-time data in production
-    async function updatePrices() {
+    const ENTRY_PRICE = 88104;
+    const TARGET_PRICE = 95000;
+    const LEVERAGE = 5;
+    
+    async function fetchBTCPrice() {
       try {
-        // Placeholder for real-time updates
-        const btcPrice = 88100; // Would fetch from API
-        const entryPrice = 88104;
-        const pnl = ((btcPrice - entryPrice) / entryPrice * 100 * 5).toFixed(2);
-        document.getElementById('btc-pnl').textContent = (pnl >= 0 ? '+' : '') + pnl + '%';
-        document.getElementById('btc-pnl').className = 'detail-value ' + (pnl >= 0 ? 'positive' : 'negative');
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const data = await res.json();
+        return data.bitcoin.usd;
       } catch (e) {
-        console.error('Error updating prices:', e);
+        console.error('Price fetch failed:', e);
+        return null;
       }
     }
     
-    updatePrices();
-    setInterval(updatePrices, 30000);
+    async function updateUI() {
+      const price = await fetchBTCPrice();
+      if (!price) return;
+      
+      // Update price display
+      document.getElementById('btc-price').textContent = '$' + price.toLocaleString();
+      
+      // Calculate P&L
+      const pnlPercent = ((price - ENTRY_PRICE) / ENTRY_PRICE * 100 * LEVERAGE);
+      const pnlDisplay = (pnlPercent >= 0 ? '+' : '') + pnlPercent.toFixed(2) + '%';
+      
+      const pnlEl = document.getElementById('position-pnl');
+      pnlEl.textContent = pnlDisplay;
+      pnlEl.className = 'price-change ' + (pnlPercent >= 0 ? 'positive' : 'negative');
+      pnlEl.style.color = pnlPercent >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      // Update table P&L
+      const tablePnl = document.getElementById('table-pnl');
+      tablePnl.textContent = pnlDisplay;
+      tablePnl.style.color = pnlPercent >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      // Distance to target
+      const distanceToTarget = ((TARGET_PRICE - price) / price * 100).toFixed(1);
+      document.getElementById('distance-target').textContent = distanceToTarget + '%';
+    }
+    
+    // Initial update
+    updateUI();
+    
+    // Update every 30 seconds
+    setInterval(updateUI, 30000);
   </script>
 </body>
 </html>
