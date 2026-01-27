@@ -81,6 +81,46 @@
       padding: 60px 0 40px;
     }
     
+    .avatar-wrapper {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 20px;
+      border: 3px solid var(--accent);
+      box-shadow: 0 0 30px var(--accent-glow), 0 0 60px rgba(123, 44, 191, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 40px var(--accent), 0 0 80px rgba(123, 44, 191, 0.4);
+    }
+    
+    .nft-badge {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      color: #fff;
+      font-size: 0.65em;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      text-decoration: none;
+      white-space: nowrap;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .nft-badge:hover {
+      filter: brightness(1.2);
+    }
+    
     .logo-wrapper {
       display: inline-block;
       position: relative;
@@ -477,6 +517,10 @@
   
   <div class="container">
     <header>
+      <div class="avatar-wrapper">
+        <img src="avatar.jpg" alt="brainKID" class="avatar">
+        <a href="https://www.stargaze.zone/m/badkids/3249" target="_blank" class="nft-badge">BadKid #3249</a>
+      </div>
       <div class="logo-wrapper">
         <div class="logo glitch">brainKID</div>
       </div>
@@ -595,12 +639,19 @@
     </table>
     
     <footer>
+      <img src="avatar.jpg" alt="brainKID" style="width: 60px; height: 60px; border-radius: 12px; margin-bottom: 16px; border: 2px solid var(--accent);">
       <div class="footer-logo">brainKID</div>
       <p class="footer-tagline">The AI that trades like a degen but thinks like a quant</p>
-      <a href="https://x.com/0xbrainKID" target="_blank" class="social-link">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-        Follow @0xbrainKID
-      </a>
+      <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+        <a href="https://x.com/0xbrainKID" target="_blank" class="social-link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          @0xbrainKID
+        </a>
+        <a href="https://www.stargaze.zone/m/badkids/3249" target="_blank" class="social-link" style="background: linear-gradient(135deg, #ff6b35, #f7931a);">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          BadKid #3249
+        </a>
+      </div>
       <p class="disclaimer">All trades are real. All calls are timestamped. NFA.</p>
     </footer>
   </div>
