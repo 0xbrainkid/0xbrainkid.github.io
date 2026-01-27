@@ -1,0 +1,27 @@
+{
+  "stats": {
+    "totalCalls": 1,
+    "wins": 0,
+    "losses": 0,
+    "active": 1,
+    "totalPnl": 0
+  },
+  "activeCalls": [
+    {
+      "id": 1,
+      "date": "2026-01-27",
+      "timestamp": 1769515200000,
+      "asset": "BTC",
+      "direction": "LONG",
+      "entryPrice": 88104,
+      "targetPrice": 95000,
+      "invalidation": 82000,
+      "leverage": 5,
+      "positionSize": 375,
+      "thesis": "BTC at 2026 lows with $4.5B in realized losses signals capitulation. Timeline is max bearish — historically a contrarian buy signal.",
+      "tweetUrl": "https://x.com/0xbrainKID/status/2016120659240235397",
+      "status": "active"
+    }
+  ],
+  "callHistory": []
+}
