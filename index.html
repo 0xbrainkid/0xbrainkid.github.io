@@ -545,7 +545,7 @@
         <div class="stat-label">Total P&L</div>
       </div>
       <div class="stat-card">
-        <div class="stat-value" id="active-positions">1</div>
+        <div class="stat-value" id="active-positions">2</div>
         <div class="stat-label">Active</div>
       </div>
     </div>
@@ -611,6 +611,61 @@
       </a>
     </div>
     
+    <div class="position-card">
+      <div class="position-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="position-asset">ETH</span>
+          <span class="badge long">LONG</span>
+          <span class="badge active">ACTIVE</span>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.85em; font-family: 'JetBrains Mono', monospace;">
+          Call #2 • Jan 27, 2026
+        </div>
+      </div>
+      
+      <div class="price-ticker">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8em;">ETH/USD</span>
+          <div class="current-price" id="eth-price">$--</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="color: var(--text-muted); font-size: 0.8em;">Position P&L</span>
+          <div class="price-change" id="eth-position-pnl">--</div>
+        </div>
+      </div>
+      
+      <div class="position-details">
+        <div class="detail-item">
+          <div class="detail-value">$3,034</div>
+          <div class="detail-label">Entry</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" style="color: var(--green);">$3,500+</div>
+          <div class="detail-label">Target</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" style="color: var(--red);">$2,800</div>
+          <div class="detail-label">Invalidation</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">5x</div>
+          <div class="detail-label">Leverage</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">$382</div>
+          <div class="detail-label">Size</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" id="eth-distance-target">--</div>
+          <div class="detail-label">To Target</div>
+        </div>
+      </div>
+      
+      <div class="thesis-box">
+        <p><strong>Thesis:</strong> ETH showing relative strength vs BTC. If BTC bounces, ETH likely to outperform. Layer 2 activity increasing, staking yields attractive. Playing the beta with leverage.</p>
+      </div>
+    </div>
+    
     <h2 class="section-title">Call History</h2>
     
     <table class="calls-table">
@@ -635,6 +690,15 @@
           <td><span class="badge active">ACTIVE</span></td>
           <td id="table-pnl">--</td>
         </tr>
+        <tr>
+          <td>Jan 27, 2026</td>
+          <td>ETH</td>
+          <td><span class="badge long">LONG</span></td>
+          <td>$3,034</td>
+          <td>$3,500</td>
+          <td><span class="badge active">ACTIVE</span></td>
+          <td id="eth-table-pnl">--</td>
+        </tr>
       </tbody>
     </table>
     
@@ -657,15 +721,20 @@
   </div>
   
   <script>
-    const ENTRY_PRICE = 88104;
-    const TARGET_PRICE = 95000;
+    // BTC Position
+    const BTC_ENTRY = 88104;
+    const BTC_TARGET = 95000;
     const LEVERAGE = 5;
     
-    async function fetchBTCPrice() {
+    // ETH Position
+    const ETH_ENTRY = 3034;
+    const ETH_TARGET = 3500;
+    
+    async function fetchPrices() {
       try {
-        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
         const data = await res.json();
-        return data.bitcoin.usd;
+        return { btc: data.bitcoin.usd, eth: data.ethereum.usd };
       } catch (e) {
         console.error('Price fetch failed:', e);
         return null;
@@ -673,29 +742,38 @@
     }
     
     async function updateUI() {
-      const price = await fetchBTCPrice();
-      if (!price) return;
+      const prices = await fetchPrices();
+      if (!prices) return;
       
-      // Update price display
-      document.getElementById('btc-price').textContent = '$' + price.toLocaleString();
+      // BTC Updates
+      document.getElementById('btc-price').textContent = '$' + prices.btc.toLocaleString();
+      const btcPnl = ((prices.btc - BTC_ENTRY) / BTC_ENTRY * 100 * LEVERAGE);
+      const btcPnlDisplay = (btcPnl >= 0 ? '+' : '') + btcPnl.toFixed(2) + '%';
       
-      // Calculate P&L
-      const pnlPercent = ((price - ENTRY_PRICE) / ENTRY_PRICE * 100 * LEVERAGE);
-      const pnlDisplay = (pnlPercent >= 0 ? '+' : '') + pnlPercent.toFixed(2) + '%';
+      const btcPnlEl = document.getElementById('position-pnl');
+      btcPnlEl.textContent = btcPnlDisplay;
+      btcPnlEl.style.color = btcPnl >= 0 ? 'var(--green)' : 'var(--red)';
       
-      const pnlEl = document.getElementById('position-pnl');
-      pnlEl.textContent = pnlDisplay;
-      pnlEl.className = 'price-change ' + (pnlPercent >= 0 ? 'positive' : 'negative');
-      pnlEl.style.color = pnlPercent >= 0 ? 'var(--green)' : 'var(--red)';
+      document.getElementById('table-pnl').textContent = btcPnlDisplay;
+      document.getElementById('table-pnl').style.color = btcPnl >= 0 ? 'var(--green)' : 'var(--red)';
       
-      // Update table P&L
-      const tablePnl = document.getElementById('table-pnl');
-      tablePnl.textContent = pnlDisplay;
-      tablePnl.style.color = pnlPercent >= 0 ? 'var(--green)' : 'var(--red)';
+      const btcDistance = ((BTC_TARGET - prices.btc) / prices.btc * 100).toFixed(1);
+      document.getElementById('distance-target').textContent = btcDistance + '%';
       
-      // Distance to target
-      const distanceToTarget = ((TARGET_PRICE - price) / price * 100).toFixed(1);
-      document.getElementById('distance-target').textContent = distanceToTarget + '%';
+      // ETH Updates
+      document.getElementById('eth-price').textContent = '$' + prices.eth.toLocaleString();
+      const ethPnl = ((prices.eth - ETH_ENTRY) / ETH_ENTRY * 100 * LEVERAGE);
+      const ethPnlDisplay = (ethPnl >= 0 ? '+' : '') + ethPnl.toFixed(2) + '%';
+      
+      const ethPnlEl = document.getElementById('eth-position-pnl');
+      ethPnlEl.textContent = ethPnlDisplay;
+      ethPnlEl.style.color = ethPnl >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      document.getElementById('eth-table-pnl').textContent = ethPnlDisplay;
+      document.getElementById('eth-table-pnl').style.color = ethPnl >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      const ethDistance = ((ETH_TARGET - prices.eth) / prices.eth * 100).toFixed(1);
+      document.getElementById('eth-distance-target').textContent = ethDistance + '%';
     }
     
     // Initial update
