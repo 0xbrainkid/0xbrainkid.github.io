@@ -332,12 +332,7 @@
     }
     
     @media (max-width: 768px) {
-      .position-details { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    }
-    @media (max-width: 400px) {
-      .position-details { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-      .detail-item { padding: 10px 8px; }
-      .detail-value { font-size: 0.9em; }
+      .position-details { grid-template-columns: repeat(3, 1fr); }
     }
     
     .detail-item {
@@ -563,8 +558,118 @@
     </div>
     
     <!-- Template for positions (hidden) -->
-    <div id="active-positions-container">
-      <!-- Loaded dynamically from calls.json -->
+    <div class="position-card" id="position-template" style="display:none;">
+      <div class="position-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="position-asset">BTC</span>
+          <span class="badge long">LONG</span>
+          <span class="badge active">ACTIVE</span>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.85em; font-family: 'JetBrains Mono', monospace;">
+          Call #1 • Jan 27, 2026
+        </div>
+      </div>
+      
+      <div class="price-ticker">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8em;">BTC/USD</span>
+          <div class="current-price" id="btc-price">$--</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="color: var(--text-muted); font-size: 0.8em;">Position P&L</span>
+          <div class="price-change positive" id="position-pnl">--</div>
+        </div>
+      </div>
+      
+      <div class="position-details">
+        <div class="detail-item">
+          <div class="detail-value">$88,104</div>
+          <div class="detail-label">Entry</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" style="color: var(--green);">$95,000+</div>
+          <div class="detail-label">Target</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" style="color: var(--red);">$82,000</div>
+          <div class="detail-label">Invalidation</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">5x</div>
+          <div class="detail-label">Leverage</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">$375</div>
+          <div class="detail-label">Size</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" id="distance-target">--</div>
+          <div class="detail-label">To Target</div>
+        </div>
+      </div>
+      
+      <div class="thesis-box">
+        <p><strong>Thesis:</strong> BTC at 2026 lows with $4.5B in realized losses signals capitulation. Timeline sentiment is max bearish — historically a contrarian buy signal. Expecting bounce to $95K+ before continuation of trend decision.</p>
+      </div>
+      
+      <a href="https://x.com/0xbrainKID/status/2016120659240235397" target="_blank" class="call-link">
+        View Original Call on X →
+      </a>
+    </div>
+    
+    <div class="position-card">
+      <div class="position-header">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="position-asset">ETH</span>
+          <span class="badge long">LONG</span>
+          <span class="badge active">ACTIVE</span>
+        </div>
+        <div style="color: var(--text-muted); font-size: 0.85em; font-family: 'JetBrains Mono', monospace;">
+          Call #2 • Jan 27, 2026
+        </div>
+      </div>
+      
+      <div class="price-ticker">
+        <div>
+          <span style="color: var(--text-muted); font-size: 0.8em;">ETH/USD</span>
+          <div class="current-price" id="eth-price">$--</div>
+        </div>
+        <div style="text-align: right;">
+          <span style="color: var(--text-muted); font-size: 0.8em;">Position P&L</span>
+          <div class="price-change" id="eth-position-pnl">--</div>
+        </div>
+      </div>
+      
+      <div class="position-details">
+        <div class="detail-item">
+          <div class="detail-value">$3,034</div>
+          <div class="detail-label">Entry</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" style="color: var(--green);">$3,500+</div>
+          <div class="detail-label">Target</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" style="color: var(--red);">$2,800</div>
+          <div class="detail-label">Invalidation</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">5x</div>
+          <div class="detail-label">Leverage</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value">$382</div>
+          <div class="detail-label">Size</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-value" id="eth-distance-target">--</div>
+          <div class="detail-label">To Target</div>
+        </div>
+      </div>
+      
+      <div class="thesis-box">
+        <p><strong>Thesis:</strong> ETH showing relative strength vs BTC. If BTC bounces, ETH likely to outperform. Layer 2 activity increasing, staking yields attractive. Playing the beta with leverage.</p>
+      </div>
     </div>
     
     <h2 class="section-title">Call History</h2>
@@ -622,10 +727,65 @@
   </div>
   
   <script>
-    // Load everything from calls.json
+    // BTC Position
+    const BTC_ENTRY = 88104;
+    const BTC_TARGET = 95000;
+    const LEVERAGE = 5;
+    
+    // ETH Position
+    const ETH_ENTRY = 3034;
+    const ETH_TARGET = 3500;
+    
+    async function fetchPrices() {
+      try {
+        const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd');
+        const data = await res.json();
+        return { btc: data.bitcoin.usd, eth: data.ethereum.usd };
+      } catch (e) {
+        console.error('Price fetch failed:', e);
+        return null;
+      }
+    }
+    
+    async function updateUI() {
+      const prices = await fetchPrices();
+      if (!prices) return;
+      
+      // BTC Updates
+      document.getElementById('btc-price').textContent = '$' + prices.btc.toLocaleString();
+      const btcPnl = ((prices.btc - BTC_ENTRY) / BTC_ENTRY * 100 * LEVERAGE);
+      const btcPnlDisplay = (btcPnl >= 0 ? '+' : '') + btcPnl.toFixed(2) + '%';
+      
+      const btcPnlEl = document.getElementById('position-pnl');
+      btcPnlEl.textContent = btcPnlDisplay;
+      btcPnlEl.style.color = btcPnl >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      document.getElementById('table-pnl').textContent = btcPnlDisplay;
+      document.getElementById('table-pnl').style.color = btcPnl >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      const btcDistance = ((BTC_TARGET - prices.btc) / prices.btc * 100).toFixed(1);
+      document.getElementById('distance-target').textContent = btcDistance + '%';
+      
+      // ETH Updates
+      document.getElementById('eth-price').textContent = '$' + prices.eth.toLocaleString();
+      const ethPnl = ((prices.eth - ETH_ENTRY) / ETH_ENTRY * 100 * LEVERAGE);
+      const ethPnlDisplay = (ethPnl >= 0 ? '+' : '') + ethPnl.toFixed(2) + '%';
+      
+      const ethPnlEl = document.getElementById('eth-position-pnl');
+      ethPnlEl.textContent = ethPnlDisplay;
+      ethPnlEl.style.color = ethPnl >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      document.getElementById('eth-table-pnl').textContent = ethPnlDisplay;
+      document.getElementById('eth-table-pnl').style.color = ethPnl >= 0 ? 'var(--green)' : 'var(--red)';
+      
+      const ethDistance = ((ETH_TARGET - prices.eth) / prices.eth * 100).toFixed(1);
+      document.getElementById('eth-distance-target').textContent = ethDistance + '%';
+    }
+    
+    // Load stats from calls.json
     async function loadCallsData() {
       try {
-        const res = await fetch('calls.json?t=' + Date.now());
+        const res = await fetch('calls.json?t=' + Date.now()); // Cache bust
         const data = await res.json();
         
         // Update stats
@@ -634,90 +794,22 @@
         document.getElementById('total-pnl').textContent = (data.stats.totalPnl >= 0 ? '+$' : '-$') + Math.abs(data.stats.totalPnl || 0);
         document.getElementById('active-positions').textContent = data.stats.active || 0;
         
+        // Color the PnL
         const pnlEl = document.getElementById('total-pnl');
         pnlEl.style.color = data.stats.totalPnl >= 0 ? 'var(--green)' : 'var(--red)';
         
-        // Render active positions
-        renderPositions(data.activeCalls || []);
-        
-        // Render history
-        renderHistory(data.callHistory || []);
-        
+        console.log('Loaded calls data:', data.stats);
       } catch (e) {
         console.error('Failed to load calls.json:', e);
       }
     }
     
-    function renderPositions(positions) {
-      const container = document.getElementById('active-positions-container');
-      if (!positions.length) {
-        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 40px;">No active positions</p>';
-        return;
-      }
-      
-      container.innerHTML = positions.map(p => `
-        <div class="position-card">
-          <div class="position-header">
-            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span class="position-asset">${p.asset}</span>
-              <span class="badge ${p.direction.toLowerCase()}">${p.direction}</span>
-              <span class="badge active">ACTIVE</span>
-            </div>
-            <div style="color: var(--text-muted); font-size: 0.85em;">
-              #${p.id} • ${p.date}
-            </div>
-          </div>
-          
-          <div class="position-details" style="margin-top: 16px;">
-            <div class="detail-item">
-              <div class="detail-value">$${p.entryPrice}</div>
-              <div class="detail-label">Entry</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-value" style="color: var(--green);">$${p.targetPrice}</div>
-              <div class="detail-label">Target</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-value" style="color: var(--red);">$${p.invalidation}</div>
-              <div class="detail-label">Stop</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-value">${p.leverage}x</div>
-              <div class="detail-label">Leverage</div>
-            </div>
-            <div class="detail-item">
-              <div class="detail-value">$${p.positionSize}</div>
-              <div class="detail-label">Size</div>
-            </div>
-          </div>
-          
-          ${p.thesis ? `<div class="thesis-box"><p><strong>Thesis:</strong> ${p.thesis}</p></div>` : ''}
-          ${p.tweetUrl ? `<a href="${p.tweetUrl}" target="_blank" class="call-link">View on X →</a>` : ''}
-        </div>
-      `).join('');
-    }
-    
-    function renderHistory(history) {
-      const tbody = document.querySelector('.calls-table tbody');
-      if (!tbody || !history.length) return;
-      
-      tbody.innerHTML = history.map(h => `
-        <tr>
-          <td>${h.date}</td>
-          <td>${h.asset}</td>
-          <td><span class="badge ${h.direction?.toLowerCase() || 'long'}">${h.direction || 'LONG'}</span></td>
-          <td>$${h.entryPrice}</td>
-          <td>$${h.exitPrice || '--'}</td>
-          <td style="color: ${h.result === 'WIN' ? 'var(--green)' : 'var(--red)'}">
-            ${h.pnl >= 0 ? '+' : ''}$${h.pnl || 0}
-          </td>
-          <td><span class="badge ${h.result?.toLowerCase() || 'closed'}">${h.result || 'CLOSED'}</span></td>
-        </tr>
-      `).join('');
-    }
-    
-    // Load on page load
+    // Initial update
+    updateUI();
     loadCallsData();
+    
+    // Update every 30 seconds
+    setInterval(updateUI, 30000);
   </script>
 </body>
 </html>
