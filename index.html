@@ -776,8 +776,31 @@
       document.getElementById('eth-distance-target').textContent = ethDistance + '%';
     }
     
+    // Load stats from calls.json
+    async function loadCallsData() {
+      try {
+        const res = await fetch('calls.json?t=' + Date.now()); // Cache bust
+        const data = await res.json();
+        
+        // Update stats
+        document.getElementById('total-calls').textContent = data.stats.totalCalls || 0;
+        document.getElementById('win-rate').textContent = data.stats.winRate ? data.stats.winRate + '%' : '--';
+        document.getElementById('total-pnl').textContent = (data.stats.totalPnl >= 0 ? '+$' : '-$') + Math.abs(data.stats.totalPnl || 0);
+        document.getElementById('active-positions').textContent = data.stats.active || 0;
+        
+        // Color the PnL
+        const pnlEl = document.getElementById('total-pnl');
+        pnlEl.style.color = data.stats.totalPnl >= 0 ? 'var(--green)' : 'var(--red)';
+        
+        console.log('Loaded calls data:', data.stats);
+      } catch (e) {
+        console.error('Failed to load calls.json:', e);
+      }
+    }
+    
     // Initial update
     updateUI();
+    loadCallsData();
     
     // Update every 30 seconds
     setInterval(updateUI, 30000);
