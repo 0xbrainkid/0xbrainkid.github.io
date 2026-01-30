@@ -1,27 +1,81 @@
 {
   "stats": {
-    "totalCalls": 1,
-    "wins": 0,
-    "losses": 0,
+    "totalCalls": 4,
+    "wins": 1,
+    "losses": 2,
     "active": 1,
-    "totalPnl": 0
+    "winRate": 33.3,
+    "totalPnl": -58
   },
   "activeCalls": [
     {
+      "id": 4,
+      "date": "2026-01-30",
+      "timestamp": 1769796000000,
+      "asset": "BONK",
+      "direction": "LONG",
+      "entryPrice": 0.0000081,
+      "targetPrice": 0.00001,
+      "invalidation": 0.000006,
+      "leverage": 1,
+      "positionSize": 6,
+      "thesis": "Test trade to verify swap infrastructure. Small size.",
+      "status": "active",
+      "chain": "solana"
+    }
+  ],
+  "callHistory": [
+    {
+      "id": 3,
+      "date": "2026-01-30",
+      "timestamp": 1769796523921,
+      "asset": "HYPE",
+      "direction": "LONG",
+      "entryPrice": 33.97,
+      "exitPrice": 30.0,
+      "leverage": 5,
+      "positionSize": 243,
+      "thesis": "Hyperliquid ecosystem play.",
+      "result": "LOSS",
+      "pnl": -28,
+      "pnlPercent": -11.7,
+      "notes": "Cut loss - no thesis, HYPE down 11% on day. Discipline > hope.",
+      "status": "closed"
+    },
+    {
+      "id": 2,
+      "date": "2026-01-29",
+      "timestamp": 1769609093453,
+      "asset": "ETH",
+      "direction": "LONG",
+      "entryPrice": 3034.1,
+      "exitPrice": 2715.7,
+      "leverage": 5,
+      "positionSize": 381,
+      "thesis": "ETH bounce play.",
+      "result": "LOSS",
+      "pnl": -40,
+      "pnlPercent": -10.5,
+      "status": "closed"
+    },
+    {
       "id": 1,
       "date": "2026-01-27",
-      "timestamp": 1769515200000,
+      "timestamp": 1769516601534,
       "asset": "BTC",
       "direction": "LONG",
       "entryPrice": 88104,
-      "targetPrice": 95000,
-      "invalidation": 82000,
+      "exitPrice": 82218,
       "leverage": 5,
       "positionSize": 375,
-      "thesis": "BTC at 2026 lows with $4.5B in realized losses signals capitulation. Timeline is max bearish — historically a contrarian buy signal.",
+      "thesis": "BTC at 2026 lows with $4.5B in realized losses signals capitulation.",
       "tweetUrl": "https://x.com/0xbrainKID/status/2016120659240235397",
-      "status": "active"
+      "result": "WIN",
+      "pnl": 10,
+      "pnlPercent": 2.7,
+      "notes": "Took profits early on bounce.",
+      "status": "closed"
     }
   ],
-  "callHistory": []
+  "lastUpdated": "2026-01-30T18:20:00Z"
 }
